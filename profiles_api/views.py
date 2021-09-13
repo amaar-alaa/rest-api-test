@@ -2,6 +2,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from . import serializers
+from rest_framework import viewsets
+
 
 class HelloApiView(APIView):
     """ test Api view """
@@ -34,3 +36,34 @@ class HelloApiView(APIView):
     def delete(self,request,pk=None):
         """ Delete an objects"""
         return Response({'method':'DELETE'})       
+
+
+
+class HelloViewSet(viewsets.ViewSet):
+    """ test API viewset"""
+    serializer_class=serializers.HelloSerializer
+    def list(self,request):
+        a_viewset=['view set is ease than APIView ','and not simple']
+        return Response({'message':'hello','a_viewset':a_viewset})
+
+    def create(self,request):
+        serializer=self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            name=serializer.validated_data.get('name')
+            message=f'Hello {name}'
+            return Response({'message':message})
+        else:
+            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
+    def retrieve(self,request,pk=None):
+        """ Handle getting an object by it's ID"""
+        return Response({'http_method':'GET'})
+
+    def update(self,request,pk=None):
+        return Response({'http_method':"PUT"})
+
+    def partial_update(self,request,pk=None):
+        return Response({'http_method':"PATCH"})
+
+    def destroy(self,request,pk=None):
+        return Response({'http_method':"DELETE"})                             
